@@ -1,0 +1,5 @@
+dist
+node_modules
+src/config.json
+yarn.lock
+package-lock.json
