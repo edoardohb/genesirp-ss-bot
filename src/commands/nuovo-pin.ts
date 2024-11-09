@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import fetch from 'node-fetch';
+import { Config } from '..';
 
 interface EchoApiResponse {
   pin: number;
@@ -16,16 +17,17 @@ interface EchoApiResponse {
 
 export const command = new SlashCommandBuilder()
   .setName('nuovo-pin')
-  .setDescription('Genera un nuovo Pin per i controlli SS');
+  .setDescription('Genera un nuovo PIN Echo per i controlli SS');
 
-export async function execute(interaction: CommandInteraction, config: any): Promise<void> {
+export async function execute(interaction: CommandInteraction, config: Config): Promise<void> {
   const isEdo = interaction.user.id === config.EDO_ID;
+  const apiKey = config.ECHO_API_KEY;
 
   try {
     const response = await fetch('https://api.echo.ac/v1/user/pin', {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer 2777KLEuNPUybN8WgnpCqe.YCmAHbEsjVAkmxoAhoCXk62dR5TxZbtLpBi9PbrkuSPM',
+        'Authorization': `Bearer ${apiKey}`,
       },
     });
 

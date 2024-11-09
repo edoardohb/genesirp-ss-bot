@@ -17,6 +17,7 @@ export interface Config {
   EDO_ID: string;
   NEW_PIN_ID: string;
   MONGODB_URL: string;
+  ECHO_API_KEY: string;
 }
 
 const config: Config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
