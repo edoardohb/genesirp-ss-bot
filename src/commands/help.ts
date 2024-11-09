@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { EmbedBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, EmbedBuilder } from 'discord.js';
 
 export const command = new SlashCommandBuilder()
   .setName('help')

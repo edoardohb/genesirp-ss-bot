@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import { Config } from '.';
 import fs from 'fs';
+import mongoose from 'mongoose';
 import path from 'path';
+import { Config } from '.';
 
 const config: Config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
 

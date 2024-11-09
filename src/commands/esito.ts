@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { EmbedBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
-import Esito from '../models/Esito'; // Importiamo il modello
+import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import Esito from '../models/Esito';
 
 export const command = new SlashCommandBuilder()
   .setName('esito')
@@ -68,7 +67,7 @@ export async function execute(interaction: CommandInteraction, config: any) {
       scanner: link,
       screenSharer: screenSharer.id
     });
-    
+
     await esito.save();
     console.log('Esito salvato nel database');
   } catch (error) {

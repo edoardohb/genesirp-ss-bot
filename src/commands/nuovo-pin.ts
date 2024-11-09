@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { EmbedBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import fetch from 'node-fetch';
 
 interface EchoApiResponse {
@@ -44,7 +43,7 @@ export async function execute(interaction: CommandInteraction, config: any): Pro
       .setTitle('📌 Nuovo Pin Creato')
       .setDescription('Hai richiesto un nuovo Pin per i controlli SS.')
       .addFields(
-        { name: 'User', value: `<@${interaction.user.id}>`, inline: false},
+        { name: 'User', value: `<@${interaction.user.id}>`, inline: false },
         { name: 'PIN', value: pin.toString(), inline: false },
         { name: 'Link FiveM', value: fivemLink, inline: false }
       )
