@@ -5,7 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { command as esitoCommand, execute as esitoExecute } from './commands/esito';
 import { command as helpCommand, execute as helpExecute } from './commands/help';
-import { command as newPinCommand, execute as newPinExecute } from './commands/nuovo-pin';
+import { command as newPinCommand, execute as newPinExecute } from './commands/pin';
+import { command as addCommand, execute as addExecute } from './commands/add';
 import connectDB from './db';
 
 export interface Config {
@@ -31,7 +32,8 @@ const ssChannelId = config.NEW_PIN_ID;
 const commands = [
   esitoCommand.toJSON(),
   helpCommand.toJSON(),
-  newPinCommand.toJSON()
+  newPinCommand.toJSON(),
+  addCommand.toJSON(),
 ];
 
 const rest = new REST({ version: '9' }).setToken(token);
@@ -77,7 +79,7 @@ client.on('interactionCreate', async (interaction) => {
       case 'help':
         await helpExecute(interaction, config);
         break;
-      case 'nuovo-pin':
+      case 'pin':
         if (interaction.channelId !== ssChannelId) {
           await interaction.reply({
             content: `Questo comando può essere eseguito solo nel canale https://discord.com/channels/${guildId}/${ssChannelId}.`,
@@ -87,6 +89,17 @@ client.on('interactionCreate', async (interaction) => {
         }
 
         await newPinExecute(interaction, config);
+        break;
+      case 'add':
+        if (interaction.channelId !== "1291437015308439668") {
+          await interaction.reply({
+            content: `Questo comando può essere eseguito solo nel canale https://discord.com/channels/${guildId}/1291437015308439668.`,
+            ephemeral: true
+          });
+          return;
+        }
+
+        await addExecute(interaction, config);
         break;
     }
   }

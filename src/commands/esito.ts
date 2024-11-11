@@ -39,17 +39,17 @@ export async function execute(interaction: CommandInteraction, config: any) {
 
   const screenSharer = interaction.user;
 
-  const link = /^[A-Z0-9]{8}$/.test(pin) ? `https://anticheat.ac/pins/result/${pin}` : `https://www.napse.ac/results/${pin}`;
+  const link = /^[A-Z0-9]{8}$/.test(pin) ? `https://anticheat.ac/pins/result/${pin}` : /^\d{6}$/.test(pin) ? `https://www.napse.ac/results/${pin}` : '';
 
   const embed = new EmbedBuilder()
     .setColor(0x000000)
     .setTitle('📸 Esito Screenshare')
-    .setDescription('Ecco il risultato della screenshare in dettaglio:')
+    .setDescription('Ecco il risultato dello ScreenShare in dettaglio:')
     .setThumbnail('https://media.discordapp.net/attachments/1303379076706336931/1304584759573221408/Logo_nero_grigio.png')
     .addFields(
       { name: '__**Bypasser**__:', value: bypasser, inline: true },
       { name: '__**ScreenSharer**__:', value: `<@${screenSharer.id}>`, inline: true },
-      { name: '__**Pin**__:', value: `[${pin}](${link})`, inline: true },
+      { name: '__**Pin**__:', value: link !== '' ? `[${pin}](${link})` : pin, inline: true },
       { name: '__**Time**__:', value: time, inline: true },
       { name: '__**Found**__:', value: found === 'yes' ? '✅ Trovato' : '❌ Non trovato', inline: true },
       { name: '__**Proofs**__:', value: proofs.toLowerCase() === 'no' ? '❌ Nessuna prova fornita' : proofs, inline: true }

@@ -19,7 +19,7 @@ export async function execute(interaction: CommandInteraction, config: any) {
       { name: '__Time__', value: 'Tempo', inline: true },
       { name: '__Found__', value: 'Il cheat è stato trovato?', inline: true },
       { name: '__Proofs__', value: 'Prove (link | no)', inline: true },
-      { name: '**Esempio di utilizzo**', value: '`/esito bypasser: @user pin: 123123 time: 5min found: yes proofs: link | no`', inline: false }
+      { name: '**Esempio di utilizzo**', value: '`/esito bypasser: <@1044344751547240468> pin: 280215 time: 42min found: No proofs: No`', inline: false }
     )
     .setFooter({ text: 'Comando help | ss.genesirp.it' });
 
