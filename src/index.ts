@@ -7,6 +7,7 @@ import { command as esitoCommand, execute as esitoExecute } from './commands/esi
 import { command as helpCommand, execute as helpExecute } from './commands/help';
 import { command as newPinCommand, execute as newPinExecute } from './commands/pin';
 import { command as addCommand, execute as addExecute } from './commands/add';
+import { command as removeCommand, execute as removeExecute } from './commands/remove';
 import connectDB from './db';
 
 export interface Config {
@@ -34,6 +35,7 @@ const commands = [
   helpCommand.toJSON(),
   newPinCommand.toJSON(),
   addCommand.toJSON(),
+  removeCommand.toJSON(),
 ];
 
 const rest = new REST({ version: '9' }).setToken(token);
@@ -100,6 +102,17 @@ client.on('interactionCreate', async (interaction) => {
         }
 
         await addExecute(interaction, config);
+        break;
+      case 'remove':
+        if (interaction.channelId !== "1291437015308439668") {
+          await interaction.reply({
+            content: `Questo comando può essere eseguito solo nel canale https://discord.com/channels/${guildId}/1291437015308439668.`,
+            ephemeral: true
+          });
+          return;
+        }
+
+        await removeExecute(interaction, config);
         break;
     }
   }
