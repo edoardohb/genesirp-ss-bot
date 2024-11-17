@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction, EmbedBuilder, Role, Client } from 'discord.js';
+import chalk from 'chalk';
+import { Client, CommandInteraction, EmbedBuilder, Role } from 'discord.js';
 import ms from 'ms';
 import Temprole from '../models/Temprole';
 
@@ -71,49 +72,71 @@ export async function removeExpiredRoles(client: Client) {
   try {
     const now = new Date();
     const expiredRoles = await Temprole.find({});
-    
-    console.log(`[DEBUG] Controllando ${expiredRoles.length} ruoli temporanei`);
+
+    console.log(chalk.cyan(`[${new Date().toLocaleString()}] Controllando ${chalk.yellow(expiredRoles.length)} ruoli temporanei`));
 
     for (const record of expiredRoles) {
       const expirationTime = new Date(record.createdAt.getTime() + record.duration);
-      
-      console.log(`[DEBUG] Ruolo: ${record.role}`);
-      console.log(`[DEBUG] Data creazione: ${record.createdAt}`);
-      console.log(`[DEBUG] Durata: ${record.duration}`);
-      console.log(`[DEBUG] Data scadenza: ${expirationTime}`);
-      console.log(`[DEBUG] Data attuale: ${now}`);
-      console.log(`[DEBUG] È scaduto?: ${now >= expirationTime}`);
+      const timeLeft = expirationTime.getTime() - now.getTime();
+      const timeLeftStr = ms(timeLeft, { long: true });
+
+      // Formatta la data di scadenza
+      const formattedExpiration = expirationTime.toLocaleString('it-IT', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      // Log colorato per il tempo rimanente
+      if (timeLeft > 0) {
+        console.log(
+          chalk.blue(`[${new Date().toLocaleString()}] `) +
+          chalk.green(`Il ruolo `) +
+          chalk.yellow(`${record.role}`) +
+          chalk.green(` assegnato all'utente `) +
+          chalk.yellow(`${record.user}`) +
+          chalk.green(` scade tra ${timeLeftStr} (${formattedExpiration})`)
+        );
+      }
 
       if (now >= expirationTime) {
-        console.log(`[DEBUG] Processando ruolo scaduto per utente ${record.user}`);
-        
-        // Cerca in tutte le guild del bot
+        console.log(chalk.yellow(`\n[${new Date().toLocaleString()}] Processando ruolo scaduto...`));
+
         for (const guild of client.guilds.cache.values()) {
           try {
-            console.log(`[DEBUG] Cercando in guild: ${guild.name}`);
-            
             const member = await guild.members.fetch(record.user);
             const role = guild.roles.cache.get(record.role);
 
-            console.log(`[DEBUG] Membro trovato: ${!!member}`);
-            console.log(`[DEBUG] Ruolo trovato: ${!!role}`);
-
             if (member && role) {
-              console.log(`[DEBUG] Rimuovendo ruolo ${role.name} da ${member.user.tag}`);
+              console.log(
+                chalk.blue(`[${new Date().toLocaleString()}] `) +
+                chalk.red(`Rimuovendo ruolo ${role.name} da ${member.user.tag}`)
+              );
+
               await member.roles.remove(role);
-              console.log(`[DEBUG] Ruolo rimosso con successo`);
-              
               await Temprole.deleteOne({ _id: record._id });
-              console.log(`[DEBUG] Record eliminato dal database`);
+
+              console.log(
+                chalk.blue(`[${new Date().toLocaleString()}] `) +
+                chalk.green(`✓ Ruolo rimosso con successo e database aggiornato`)
+              );
               break;
             }
           } catch (error) {
-            console.error(`[DEBUG] Errore specifico: ${error}`);
+            console.log(
+              chalk.blue(`[${new Date().toLocaleString()}] `) +
+              chalk.red(`Errore: ${error}`)
+            );
           }
         }
       }
     }
   } catch (error) {
-    console.error('[DEBUG] Errore principale:', error);
+    console.log(
+      chalk.blue(`[${new Date().toLocaleString()}] `) +
+      chalk.red(`Errore principale: ${error}`)
+    );
   }
 }
