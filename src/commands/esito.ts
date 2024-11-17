@@ -30,7 +30,7 @@ export const command = new SlashCommandBuilder()
       .setDescription('Prove (stringa o "no")')
       .setRequired(true));
 
-export async function execute(interaction: CommandInteraction, config: any) {
+export async function execute(interaction: CommandInteraction) {
   const bypasser = interaction.options.get('bypasser')?.value as string;
   const pin = interaction.options.get('pin')?.value as string;
   const time = interaction.options.get('time')?.value as string;

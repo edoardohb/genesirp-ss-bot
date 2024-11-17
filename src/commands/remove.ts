@@ -9,7 +9,7 @@ export const command = new SlashCommandBuilder()
       .setDescription('Nome dello user')
       .setRequired(true))
 
-export async function execute(interaction: CommandInteraction, config: any) {
+export async function execute(interaction: CommandInteraction) {
   const userInput = interaction.options.get('user')?.value as string;
   const gestore = interaction.user;
 

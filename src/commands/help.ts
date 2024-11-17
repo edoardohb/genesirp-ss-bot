@@ -1,11 +1,12 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { Config } from '..';
 
 export const command = new SlashCommandBuilder()
   .setName('help')
   .setDescription('Guida su come utilizzare il comando /esito');
 
-export async function execute(interaction: CommandInteraction, config: any) {
+export async function execute(interaction: CommandInteraction, config: Config) {
   const isEdo = interaction.user.id === config.EDO_ID;
 
   const embed = new EmbedBuilder()

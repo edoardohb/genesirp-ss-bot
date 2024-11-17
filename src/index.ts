@@ -8,6 +8,7 @@ import { command as helpCommand, execute as helpExecute } from './commands/help'
 import { command as newPinCommand, execute as newPinExecute } from './commands/pin';
 import { command as addCommand, execute as addExecute } from './commands/add';
 import { command as removeCommand, execute as removeExecute } from './commands/remove';
+import { command as temproleCommand, execute as temproleExecute } from './commands/temprole';
 import connectDB from './db';
 
 export interface Config {
@@ -27,7 +28,6 @@ const config: Config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.j
 const token = config.TOKEN;
 const clientId = config.CLIENT_ID;
 const guildId = config.GUILD_ID;
-const requiredRoleId = config.REQUIRED_ROLE;
 const ssChannelId = config.NEW_PIN_ID;
 
 const commands = [
@@ -36,6 +36,7 @@ const commands = [
   newPinCommand.toJSON(),
   addCommand.toJSON(),
   removeCommand.toJSON(),
+  temproleCommand.toJSON(),
 ];
 
 const rest = new REST({ version: '9' }).setToken(token);
@@ -53,6 +54,13 @@ async function registerCommands(): Promise<void> {
   } catch (error) {
     console.error('Errore nel registrare i comandi:', error);
   }
+
+  console.log("███╗   ██╗ ██████╗ ███╗   ██╗     ██████╗██╗  ██╗██╗██╗   ██╗██████╗ ███████╗██████╗ ███████╗")
+  console.log("████╗  ██║██╔═══██╗████╗  ██║    ██╔════╝██║  ██║██║██║   ██║██╔══██╗██╔════╝██╔══██╗██╔════╝")
+  console.log("██╔██╗ ██║██║   ██║██╔██╗ ██║    ██║     ███████║██║██║   ██║██║  ██║█████╗  ██████╔╝█████╗  ")
+  console.log("██║╚██╗██║██║   ██║██║╚██╗██║    ██║     ██╔══██║██║██║   ██║██║  ██║██╔══╝  ██╔══██╗██╔══╝  ")
+  console.log("██║ ╚████║╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║╚██████╔╝██████╔╝███████╗██║  ██║███████╗")
+  console.log("╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝")   
 }
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
@@ -66,7 +74,7 @@ client.on('interactionCreate', async (interaction) => {
   if (interaction.isCommand()) {
     const member = interaction.member as GuildMember;
 
-    if (!member?.roles.cache.has(requiredRoleId)) {
+    if (!member?.roles.cache.has("1291200023937421312")) {
       await interaction.reply({
         content: 'Non hai il ruolo necessario per eseguire questo comando.',
         ephemeral: true
@@ -76,11 +84,13 @@ client.on('interactionCreate', async (interaction) => {
 
     switch (interaction.commandName) {
       case 'esito':
-        await esitoExecute(interaction, config);
+        await esitoExecute(interaction);
         break;
+
       case 'help':
         await helpExecute(interaction, config);
         break;
+
       case 'pin':
         if (interaction.channelId !== ssChannelId) {
           await interaction.reply({
@@ -92,6 +102,7 @@ client.on('interactionCreate', async (interaction) => {
 
         await newPinExecute(interaction, config);
         break;
+
       case 'add':
         if (interaction.channelId !== "1291437015308439668") {
           await interaction.reply({
@@ -101,8 +112,9 @@ client.on('interactionCreate', async (interaction) => {
           return;
         }
 
-        await addExecute(interaction, config);
+        await addExecute(interaction);
         break;
+
       case 'remove':
         if (interaction.channelId !== "1291437015308439668") {
           await interaction.reply({
@@ -112,7 +124,15 @@ client.on('interactionCreate', async (interaction) => {
           return;
         }
 
-        await removeExecute(interaction, config);
+        await removeExecute(interaction);
+        break;
+
+      case 'temprole':
+        if (member?.roles.cache.has("1291200023937421312")) {
+          await temproleExecute(interaction)
+          return;
+        }
+
         break;
     }
   }
