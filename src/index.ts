@@ -10,6 +10,7 @@ import { command as addCommand, execute as addExecute } from './commands/add';
 import { command as removeCommand, execute as removeExecute } from './commands/remove';
 import { command as temproleCommand, execute as temproleExecute } from './commands/temprole';
 import connectDB from './db';
+import { removeExpiredRoles } from './commands/temprole';
 
 export interface Config {
   TOKEN: string;
@@ -54,20 +55,22 @@ async function registerCommands(): Promise<void> {
   } catch (error) {
     console.error('Errore nel registrare i comandi:', error);
   }
-
-  console.log("███╗   ██╗ ██████╗ ███╗   ██╗     ██████╗██╗  ██╗██╗██╗   ██╗██████╗ ███████╗██████╗ ███████╗")
-  console.log("████╗  ██║██╔═══██╗████╗  ██║    ██╔════╝██║  ██║██║██║   ██║██╔══██╗██╔════╝██╔══██╗██╔════╝")
-  console.log("██╔██╗ ██║██║   ██║██╔██╗ ██║    ██║     ███████║██║██║   ██║██║  ██║█████╗  ██████╔╝█████╗  ")
-  console.log("██║╚██╗██║██║   ██║██║╚██╗██║    ██║     ██╔══██║██║██║   ██║██║  ██║██╔══╝  ██╔══██╗██╔══╝  ")
-  console.log("██║ ╚████║╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║╚██████╔╝██████╔╝███████╗██║  ██║███████╗")
-  console.log("╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝")   
 }
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
-client.once('ready', () => {
+client.once('ready', async () => {
   console.log(`Il Bot ${client.user?.tag} è online`);
   registerCommands();
+  
+  console.log('[DEBUG] Eseguendo il primo controllo dei ruoli...');
+  await removeExpiredRoles(client);
+  
+  // Controlla i ruoli scaduti ogni 30 secondi
+  setInterval(async () => {
+    console.log('[DEBUG] Eseguendo controllo periodico dei ruoli...');
+    await removeExpiredRoles(client);
+  }, 30000); // 30000 ms = 30 secondi
 });
 
 client.on('interactionCreate', async (interaction) => {
