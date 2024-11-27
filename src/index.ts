@@ -70,7 +70,21 @@ client.once('ready', async () => {
   setInterval(async () => {
     console.log('[DEBUG] Eseguendo controllo periodico dei ruoli...');
     await removeExpiredRoles(client);
-  }, 30000); // 30000 ms = 30 secondi
+  }, 30000);
+
+  try {
+    const channel = await client.channels.fetch('1308587154867224707');
+    if (channel?.isTextBased()) {
+      const messages = await channel.messages.fetch({ limit: 100 });
+      messages.forEach(message => {
+        console.log(`[${message.author.tag}] ${message.content}`);
+      });
+    } else {
+      console.error("Il canale specificato non è un canale di testo.");
+    }
+  } catch (error) {
+    console.error("Errore durante il recupero dei messaggi:", error);
+  }
 });
 
 client.on('interactionCreate', async (interaction) => {
