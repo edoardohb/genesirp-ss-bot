@@ -1,6 +1,6 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
-import { Client, GatewayIntentBits, GuildMember } from 'discord.js';
+import { ActivityType, Client, Events, GatewayIntentBits, GuildMember, Partials } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 import { command as esitoCommand, execute as esitoExecute } from './commands/esito';
@@ -57,34 +57,77 @@ async function registerCommands(): Promise<void> {
   }
 }
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildIntegrations,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.MessageContent,
+  ],
+  shards: "auto",
+  partials: [
+    Partials.Message,
+    Partials.Channel,
+    Partials.GuildMember,
+    Partials.Reaction,
+    Partials.GuildScheduledEvent,
+    Partials.User,
+    Partials.ThreadMember,
+  ],
+});
 
-client.once('ready', async () => {
-  console.log(`Il Bot ${client.user?.tag} è online`);
+const activities = [
+  { name: `genesirp.it`, type: ActivityType.Playing },
+  { name: `fivem://connect/`, type: ActivityType.Listening },
+  { name: `discord.gg/genesirp`, type: ActivityType.Watching },
+];
+
+let currentActivityIndex = 0;
+
+client.once(Events.ClientReady, async (readyClient) => {
+  console.log(`Il Bot ${readyClient.user.tag} è online`);
   registerCommands();
-  
+
+  const updateTotalUsersActivity = async () => {
+    const totalUsers = client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
+    activities.push({
+      name: `${totalUsers} Membri`,
+      type: ActivityType.Streaming,
+    });
+  };
+
+  await updateTotalUsersActivity();
+
+  setInterval(async () => {
+    currentActivityIndex = (currentActivityIndex + 1) % activities.length;
+
+    if (currentActivityIndex === activities.length - 1) {
+      await updateTotalUsersActivity();
+    }
+
+    client?.user?.setPresence({
+      activities: [activities[currentActivityIndex]],
+      status: "online",
+    });
+  }, 10000);
+
   console.log('[DEBUG] Eseguendo il primo controllo dei ruoli...');
   await removeExpiredRoles(client);
-  
-  // Controlla i ruoli scaduti ogni 30 secondi
-  setInterval(async () => {
-    console.log('[DEBUG] Eseguendo controllo periodico dei ruoli...');
-    await removeExpiredRoles(client);
-  }, 30000);
 
-  try {
-    const channel = await client.channels.fetch('1308587154867224707');
-    if (channel?.isTextBased()) {
-      const messages = await channel.messages.fetch({ limit: 100 });
-      messages.forEach(message => {
-        console.log(`[${message.author.tag}] ${message.content}`);
-      });
-    } else {
-      console.error("Il canale specificato non è un canale di testo.");
-    }
-  } catch (error) {
-    console.error("Errore durante il recupero dei messaggi:", error);
-  }
+  setInterval(async () => {
+    await removeExpiredRoles(client);
+  }, 10000);
 });
 
 client.on('interactionCreate', async (interaction) => {

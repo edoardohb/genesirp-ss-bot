@@ -73,8 +73,6 @@ export async function removeExpiredRoles(client: Client) {
     const now = new Date();
     const expiredRoles = await Temprole.find({});
 
-    console.log(chalk.cyan(`[${new Date().toLocaleString()}] Controllando ${chalk.yellow(expiredRoles.length)} ruoli temporanei`));
-
     for (const record of expiredRoles) {
       const expirationTime = new Date(record.createdAt.getTime() + record.duration);
       const timeLeft = expirationTime.getTime() - now.getTime();

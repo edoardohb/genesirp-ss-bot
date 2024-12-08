@@ -67,27 +67,6 @@ export async function execute(interaction: CommandInteraction, config: Config): 
     }
 
     await interaction.reply({ embeds: [embed] });
-
-    const guideEmbed = new EmbedBuilder()
-      .setColor(0x000000)
-      .setTitle('📝 Guida Controllo SS')
-      .setDescription('Ecco i passi per eseguire correttamente il controllo SS:')
-      .addFields(
-        { name: '1. Scarica AnyDesk', value: 'Vai su [questo link](https://anydesk.com/it/downloads/thank-you?dv=win_exe) ed aprilo.', inline: false },
-        { name: '2. Copia il Codice', value: `Copia ed invia il Codice AnyDesk e mandalo a <@${interaction.user.id}>`, inline: false },
-        { name: '3. Scarica il Link', value: `Scarica [questo link](${fivemLink})`, inline: false },
-        { name: '4. Aspetta', value: `Aspetta che <@${interaction.user.id}> ti dia l'esito`, inline: false }
-      )
-      .setFooter({ text: 'Genesi SS | ss.genesirp.it' });
-
-    if (userOption) {
-      try {
-        await userOption.send({ embeds: [guideEmbed] });
-      } catch (error) {
-        console.error('Impossibile inviare la guida in privato:', error);
-      }
-    }
-
   } catch (error) {
     console.error('Errore durante la generazione del PIN:', error);
     await interaction.reply({
